@@ -1,0 +1,67 @@
+{% extends "base.html" %}
+{% block title %}IntelliSum — Analysis Result{% endblock %}
+{% block content %}
+<section class="card">
+  <h2>Document Analysis</h2>
+  <div class="meta-grid">
+    <div><strong>Filename:</strong> {{ filename }}</div>
+    <div><strong>File type:</strong> {{ file_type | upper }}</div>
+    <div><strong>Pages:</strong> {{ page_count if page_count is not none else "N/A (DOCX)" }}</div>
+    <div><strong>File size:</strong> {{ file_size_bytes }} bytes</div>
+    <div><strong>Words:</strong> {{ word_count }}</div>
+    <div><strong>Sentences:</strong> {{ sentence_count }}</div>
+    <div><strong>Sections detected:</strong> {{ section_count }}</div>
+    <div><strong>Requested:</strong> {{ summary_length }} / {{ method }}</div>
+  </div>
+  {% if metadata %}
+  <details>
+    <summary>File metadata</summary>
+    <ul>
+      {% for k, v in metadata.items() %}
+      <li><strong>{{ k }}:</strong> {{ v }}</li>
+      {% endfor %}
+    </ul>
+  </details>
+  {% endif %}
+</section>
+
+<section class="card">
+  <h3>Preview summary <span class="badge">Phase 1 placeholder</span></h3>
+  <p class="summary-text">{{ preview_summary }}</p>
+  <p class="hint">Full extractive / abstractive summarization will be implemented in Phase 2.</p>
+</section>
+
+<section class="card">
+  <h3>Keywords (TF-IDF)</h3>
+  {% if keywords %}
+  <div class="kw-wrap">
+    {% for kw in keywords %}
+    <span class="kw">{{ kw }}</span>
+    {% endfor %}
+  </div>
+  {% else %}
+  <p class="hint">No keywords could be extracted from this document.</p>
+  {% endif %}
+</section>
+
+<section class="card">
+  <h3>Detected sections ({{ section_count }})</h3>
+  {% if sections %}
+    {% for sec in sections %}
+    <details open>
+      <summary><strong>{{ sec.title }}</strong></summary>
+      <p>{{ sec.content[:800] }}{% if sec.content|length > 800 %}&hellip;{% endif %}</p>
+    </details>
+    {% endfor %}
+  {% else %}
+  <p class="hint">No reliable sections detected &mdash; continuing without section-wise grouping.</p>
+  {% endif %}
+</section>
+
+<section class="card">
+  <h3>Extracted text (first 2000 characters)</h3>
+  <pre class="text-preview">{{ text_preview }}</pre>
+</section>
+
+<a class="btn" href="{{ url_for('index') }}">Summarize another document</a>
+{% endblock %}

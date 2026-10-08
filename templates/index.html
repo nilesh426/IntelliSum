@@ -1,0 +1,68 @@
+{% extends "base.html" %}
+{% block title %}IntelliSum — Upload Document{% endblock %}
+{% block content %}
+<section class="hero">
+  <h1>IntelliSum</h1>
+  <p class="lead">
+    Upload a document and get a meaningful, well-structured summary.
+    Real NLP: text extraction, preprocessing, TF-IDF keyword extraction
+    and section detection &mdash; not just an API wrapper.
+  </p>
+</section>
+
+<section class="card">
+  <h2>Upload a document</h2>
+  <form id="upload-form" action="{{ url_for('summarize') }}" method="post" enctype="multipart/form-data">
+    <div class="form-group">
+      <label for="file">Document (PDF, DOCX, TXT &mdash; max 16 MB)</label>
+      <input type="file" id="file" name="file" accept=".pdf,.docx,.txt" required />
+      <small class="hint">Supported formats: PDF, DOCX, TXT. Files are never executed.</small>
+    </div>
+
+    <div class="form-row">
+      <div class="form-group">
+        <label for="summary_length">Summary length</label>
+        <select id="summary_length" name="summary_length">
+          <option value="short">Short (10&ndash;15%)</option>
+          <option value="medium" selected>Medium (20&ndash;30%)</option>
+          <option value="detailed">Detailed (30&ndash;40%)</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label for="method">Summarization method</label>
+        <select id="method" name="method">
+          <option value="extractive" selected>Extractive NLP (TF-IDF + cosine)</option>
+          <option value="abstractive">Abstractive AI (Phase 2)</option>
+        </select>
+      </div>
+    </div>
+
+    <div id="form-error" class="flash error" style="display:none;"></div>
+
+    <button type="submit" id="submit-btn" class="btn btn-primary">Analyze Document</button>
+    <div id="loading" class="loading" style="display:none;">Processing document&hellip;</div>
+  </form>
+</section>
+
+<section class="grid">
+  <div class="card">
+    <h3>What Phase 1 does</h3>
+    <ul>
+      <li>PDF / DOCX / TXT text extraction</li>
+      <li>Unicode + whitespace normalization</li>
+      <li>Sentence segmentation &amp; tokenization</li>
+      <li>TF-IDF keyword extraction</li>
+      <li>Heuristic section detection</li>
+    </ul>
+  </div>
+  <div class="card">
+    <h3>Coming in Phase 2</h3>
+    <ul>
+      <li>Extractive summarization (sentence ranking)</li>
+      <li>Abstractive summarization</li>
+      <li>Length control + large-document chunking</li>
+      <li>Structured summary generation</li>
+    </ul>
+  </div>
+</section>
+{% endblock %}

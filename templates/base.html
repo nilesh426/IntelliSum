@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>{% block title %}IntelliSum{% endblock %}</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}" />
+</head>
+<body>
+  <header class="navbar">
+    <div class="container nav-inner">
+      <a class="brand" href="{{ url_for('index') }}">IntelliSum</a>
+      <span class="tagline">Intelligent Document Summarization &amp; Structuring</span>
+    </div>
+  </header>
+
+  <main class="container">
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        <div class="flash-wrap">
+          {% for category, message in messages %}
+            <div class="flash {{ category }}">{{ message }}</div>
+          {% endfor %}
+        </div>
+      {% endif %}
+    {% endwith %}
+
+    {% block content %}{% endblock %}
+  </main>
+
+  <footer class="footer">
+    <div class="container">
+      <p>IntelliSum &mdash; NLP mini-project (Phase 1: extraction + preprocessing + keywords + sections). No RAG / chat / retrieval.</p>
+    </div>
+  </footer>
+
+  <script src="{{ url_for('static', filename='js/app.js') }}"></script>
+</body>
+</html>
