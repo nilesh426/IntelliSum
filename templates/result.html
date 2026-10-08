@@ -1,17 +1,34 @@
 {% extends "base.html" %}
-{% block title %}IntelliSum — Analysis Result{% endblock %}
+{% block title %}IntelliSum — Summary Result{% endblock %}
 {% block content %}
+
+<div class="result-header">
+  <h1>Document Summary</h1>
+  <p class="hint">Extractive NLP summarization &mdash; important sentences selected from the original document, presented in original order.</p>
+  <p><span class="method-badge">Summarization Method: Extractive NLP</span></p>
+</div>
+
+<!-- ============ DOCUMENT INFORMATION ============ -->
 <section class="card">
-  <h2>Document Analysis</h2>
+  <h2>&#x1F4C4; Document Information</h2>
   <div class="meta-grid">
-    <div><strong>Filename:</strong> {{ filename }}</div>
-    <div><strong>File type:</strong> {{ file_type | upper }}</div>
-    <div><strong>Pages:</strong> {{ page_count if page_count is not none else "N/A (DOCX)" }}</div>
-    <div><strong>File size:</strong> {{ file_size_bytes }} bytes</div>
-    <div><strong>Words:</strong> {{ word_count }}</div>
-    <div><strong>Sentences:</strong> {{ sentence_count }}</div>
-    <div><strong>Sections detected:</strong> {{ section_count }}</div>
-    <div><strong>Requested:</strong> {{ summary_length }} / {{ method }}</div>
+    <div><strong>File Name:</strong> {{ filename }}</div>
+    <div><strong>File Type:</strong> {{ file_type | upper }}</div>
+    <div><strong>Document Size:</strong>
+      {% if file_size_bytes is not none %}
+        {% if file_size_bytes < 1024 %}{{ file_size_bytes }} bytes
+        {% elif file_size_bytes < 1048576 %}{{ (file_size_bytes / 1024) | round(1) }} KB
+        {% else %}{{ (file_size_bytes / 1048576) | round(2) }} MB{% endif %}
+      {% else %}N/A{% endif %}
+    </div>
+    <div><strong>Number of Pages:</strong>
+      {% if file_type == 'pdf' %}{{ page_count if page_count is not none else "N/A" }}
+      {% else %}N/A ({{ file_type | upper }}){% endif %}
+    </div>
+    <div><strong>Original Words:</strong> {{ word_count }}</div>
+    <div><strong>Original Sentences:</strong> {{ sentence_count }}</div>
+    <div><strong>Sections Detected:</strong> {{ section_count }}</div>
+    <div><strong>Keywords Extracted:</strong> {{ keywords | length }}</div>
   </div>
   {% if metadata %}
   <details>
@@ -25,30 +42,166 @@
   {% endif %}
 </section>
 
+<!-- ============ SUMMARY OVERVIEW ============ -->
 <section class="card">
-  <h3>Preview summary <span class="badge">Phase 1 placeholder</span></h3>
-  <p class="summary-text">{{ preview_summary }}</p>
-  <p class="hint">Full extractive / abstractive summarization will be implemented in Phase 2.</p>
+  <h2>&#x1F4CA; Summary Overview</h2>
+  <div class="stat-cards">
+    <div class="stat-card"><div class="stat-value">{{ stats.original_words }}</div><div class="stat-label">Original Words</div></div>
+    <div class="stat-card"><div class="stat-value">{{ stats.summary_words }}</div><div class="stat-label">Summary Words</div></div>
+    <div class="stat-card"><div class="stat-value">{{ stats.compression_percent }}%</div><div class="stat-label">Compression</div></div>
+    <div class="stat-card"><div class="stat-value">{{ stats.summary_sentences }}</div><div class="stat-label">Sentences Selected</div></div>
+    <div class="stat-card"><div class="stat-value">{{ stats.section_count }}</div><div class="stat-label">Sections</div></div>
+    <div class="stat-card stat-card-accent"><div class="stat-value small">Extractive NLP</div><div class="stat-label">Method</div></div>
+  </div>
+  <p class="hint">Length: <strong>{{ stats.length }}</strong> &middot; Processing time: {{ stats.processing_time_sec }}s &middot; Original sentences: {{ stats.original_sentences }}</p>
 </section>
 
+<!-- ============ EXECUTIVE SUMMARY ============ -->
 <section class="card">
-  <h3>Keywords (TF-IDF)</h3>
-  {% if keywords %}
+  <h2>&#x1F4DD; Executive Summary</h2>
+  <p class="summary-text">{{ result.executive_summary }}</p>
+  <p class="hint">Composed of the highest-ranked sentences from the document, in original order. Wording is preserved from the source.</p>
+</section>
+
+<!-- ============ KEY POINTS ============ -->
+{% if result.key_points %}
+<section class="card">
+  <h2>&#x1F3AF; Key Points</h2>
+  <ul class="key-points">
+    {% for point in result.key_points %}
+    <li>{{ point }}</li>
+    {% endfor %}
+  </ul>
+</section>
+{% endif %}
+
+<!-- ============ SECTION-WISE SUMMARY ============ -->
+<section class="card">
+  <h2>&#x1F4DA; Section-wise Summary</h2>
+  {% if result.section_summaries %}
+    <div class="section-cards">
+    {% for sec in result.section_summaries %}
+      <div class="section-card">
+        <div class="section-card-title">{{ loop.index }}. {{ sec.title }}</div>
+        <div class="section-card-body">{{ sec.summary }}</div>
+      </div>
+    {% endfor %}
+    </div>
+  {% else %}
+    <p class="hint">No reliable document sections were detected.</p>
+  {% endif %}
+</section>
+
+<!-- ============ KEYWORDS ============ -->
+{% if result.keywords %}
+<section class="card">
+  <h2>&#x1F511; Important Keywords</h2>
   <div class="kw-wrap">
-    {% for kw in keywords %}
+    {% for kw in result.keywords %}
     <span class="kw">{{ kw }}</span>
     {% endfor %}
   </div>
-  {% else %}
-  <p class="hint">No keywords could be extracted from this document.</p>
-  {% endif %}
+</section>
+{% endif %}
+
+<!-- ============ CONCEPTS ============ -->
+{% if result.concepts %}
+<section class="card">
+  <h2>&#x1F4A1; Important Concepts</h2>
+  <ul class="concept-list">
+    {% for concept in result.concepts %}
+    <li>{{ concept }}</li>
+    {% endfor %}
+  </ul>
+</section>
+{% endif %}
+
+<!-- ============ IMPORTANT SENTENCES ============ -->
+{% if result.important_sentences %}
+<section class="card">
+  <h2>&#x1F4CC; Selected Important Sentences</h2>
+  <ol class="important-sentences">
+    {% for item in result.important_sentences %}
+    <li>
+      <span>{{ item.sentence }}</span>
+      <span class="score-badge" title="TF-IDF relevance score">Score: {{ "%.2f" | format(item.score) }}</span>
+    </li>
+    {% endfor %}
+  </ol>
+  <p class="hint">Sentences are shown in original document order. Scores reflect TF-IDF relevance to the document's main topic.</p>
+</section>
+{% endif %}
+
+<!-- ============ STATISTICS ============ -->
+<section class="card">
+  <h2>&#x1F4C8; Summary Statistics</h2>
+  <div class="stat-cards">
+    <div class="stat-card"><div class="stat-value">{{ stats.original_words }}</div><div class="stat-label">Original Words</div></div>
+    <div class="stat-card"><div class="stat-value">{{ stats.summary_words }}</div><div class="stat-label">Summary Words</div></div>
+    <div class="stat-card"><div class="stat-value">{{ stats.compression_percent }}%</div><div class="stat-label">Compression Ratio</div></div>
+    <div class="stat-card"><div class="stat-value">{{ stats.original_sentences }}</div><div class="stat-label">Original Sentences</div></div>
+    <div class="stat-card"><div class="stat-value">{{ stats.summary_sentences }}</div><div class="stat-label">Selected Sentences</div></div>
+    <div class="stat-card"><div class="stat-value">{{ stats.keyword_count }}</div><div class="stat-label">Keywords</div></div>
+  </div>
+  <table class="stats-table">
+    <tr><th>Original text</th><td>{{ stats.original_words }} words / {{ stats.original_sentences }} sentences</td></tr>
+    <tr><th>Generated summary</th><td>{{ stats.summary_words }} words / {{ stats.summary_sentences }} sentences</td></tr>
+    <tr><th>Compression</th><td>{{ stats.compression_percent }}% ({{ stats.summary_words }} of {{ stats.original_words }} words)</td></tr>
+    <tr><th>Sections detected</th><td>{{ stats.section_count }}</td></tr>
+    <tr><th>Method</th><td>{{ stats.method }}</td></tr>
+    <tr><th>Length</th><td>{{ stats.length }}</td></tr>
+  </table>
+</section>
+
+<!-- ============ CONCLUSION ============ -->
+{% if result.conclusion %}
+<section class="card">
+  <h2>&#x1F3C1; Conclusion</h2>
+  <p>{{ result.conclusion }}</p>
+  <p class="hint">Closing statement extracted from the document itself.</p>
+</section>
+{% endif %}
+
+<!-- ============ HOW IT WAS GENERATED ============ -->
+<section class="card how-it-works">
+  <h2>How the Summary Was Generated</h2>
+  <ol>
+    <li>The document was converted into text.</li>
+    <li>The text was divided into sentences.</li>
+    <li>Stopwords and unnecessary text were removed during preprocessing.</li>
+    <li>TF-IDF was used to determine important terms.</li>
+    <li>Sentence relevance was calculated with cosine similarity.</li>
+    <li>Similar / redundant sentences were reduced.</li>
+    <li>The highest-ranked sentences were selected.</li>
+    <li>Selected sentences were restored to their original order.</li>
+  </ol>
+  <p class="hint">Fully local &mdash; no external AI, no API calls, no internet required for summarization.</p>
+</section>
+
+<!-- ============ TRY DIFFERENT LENGTH ============ -->
+<section class="card">
+  <h3>Try a different summary length</h3>
+  <form id="resummarize-form" action="{{ url_for('resummarize') }}" method="post">
+    <input type="hidden" name="doc_id" value="{{ doc_id }}" />
+    <div class="form-group">
+      <label for="summary_length">Summary length</label>
+      <select id="summary_length" name="summary_length">
+        <option value="short" {% if summary_length == 'short' %}selected{% endif %}>Short &mdash; quick overview with only the highest-ranked sentences</option>
+        <option value="medium" {% if summary_length == 'medium' %}selected{% endif %}>Medium &mdash; balanced summary containing the major information</option>
+        <option value="detailed" {% if summary_length == 'detailed' %}selected{% endif %}>Detailed &mdash; more comprehensive summary with additional important sentences</option>
+      </select>
+      <small class="hint">Method: <strong>Extractive NLP</strong> (fixed &mdash; no external AI).</small>
+    </div>
+    <button type="submit" id="resubmit-btn" class="btn btn-primary">Regenerate Summary</button>
+    <div id="loading" class="loading" style="display:none;">Generating your summary&hellip;</div>
+  </form>
 </section>
 
 <section class="card">
   <h3>Detected sections ({{ section_count }})</h3>
   {% if sections %}
     {% for sec in sections %}
-    <details open>
+    <details>
       <summary><strong>{{ sec.title }}</strong></summary>
       <p>{{ sec.content[:800] }}{% if sec.content|length > 800 %}&hellip;{% endif %}</p>
     </details>

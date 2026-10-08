@@ -5,9 +5,11 @@
   <h1>IntelliSum</h1>
   <p class="lead">
     Upload a document and get a meaningful, well-structured summary.
-    Real NLP: text extraction, preprocessing, TF-IDF keyword extraction
-    and section detection &mdash; not just an API wrapper.
+    100% local NLP: text extraction, preprocessing, TF-IDF sentence scoring
+    and extractive summarization &mdash; no API key, no internet needed for
+    summarization.
   </p>
+  <p><span class="method-badge">Extractive NLP</span> <span class="hint">TF-IDF + cosine similarity &middot; works fully offline</span></p>
 </section>
 
 <section class="card">
@@ -19,34 +21,26 @@
       <small class="hint">Supported formats: PDF, DOCX, TXT. Files are never executed.</small>
     </div>
 
-    <div class="form-row">
-      <div class="form-group">
-        <label for="summary_length">Summary length</label>
-        <select id="summary_length" name="summary_length">
-          <option value="short">Short (10&ndash;15%)</option>
-          <option value="medium" selected>Medium (20&ndash;30%)</option>
-          <option value="detailed">Detailed (30&ndash;40%)</option>
-        </select>
-      </div>
-      <div class="form-group">
-        <label for="method">Summarization method</label>
-        <select id="method" name="method">
-          <option value="extractive" selected>Extractive NLP (TF-IDF + cosine)</option>
-          <option value="abstractive">Abstractive AI (Phase 2)</option>
-        </select>
-      </div>
+    <div class="form-group">
+      <label for="summary_length">Summary length</label>
+      <select id="summary_length" name="summary_length">
+        <option value="short">Short &mdash; quick overview with only the highest-ranked sentences</option>
+        <option value="medium" selected>Medium &mdash; balanced summary containing the major information</option>
+        <option value="detailed">Detailed &mdash; more comprehensive summary with additional important sentences</option>
+      </select>
+      <small class="hint">Summarization method: <strong>Extractive NLP</strong> (original sentences selected by TF-IDF ranking).</small>
     </div>
 
     <div id="form-error" class="flash error" style="display:none;"></div>
 
-    <button type="submit" id="submit-btn" class="btn btn-primary">Analyze Document</button>
+    <button type="submit" id="submit-btn" class="btn btn-primary">Generate Summary</button>
     <div id="loading" class="loading" style="display:none;">Processing document&hellip;</div>
   </form>
 </section>
 
 <section class="grid">
   <div class="card">
-    <h3>What Phase 1 does</h3>
+    <h3>What IntelliSum does</h3>
     <ul>
       <li>PDF / DOCX / TXT text extraction</li>
       <li>Unicode + whitespace normalization</li>
@@ -56,12 +50,12 @@
     </ul>
   </div>
   <div class="card">
-    <h3>Coming in Phase 2</h3>
+    <h3>How summarization works</h3>
     <ul>
-      <li>Extractive summarization (sentence ranking)</li>
-      <li>Abstractive summarization</li>
-      <li>Length control + large-document chunking</li>
-      <li>Structured summary generation</li>
+      <li><strong>Extractive NLP:</strong> TF-IDF sentence vectors, cosine-similarity ranking, redundancy removal</li>
+      <li>Length control: Short / Medium / Detailed</li>
+      <li>Structured output: executive summary, key points, section-wise summary, keywords, statistics</li>
+      <li>No external AI &mdash; everything runs locally</li>
     </ul>
   </div>
 </section>

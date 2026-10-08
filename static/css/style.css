@@ -100,6 +100,24 @@ input[type="file"], select {
   font-size: 0.9rem;
 }
 
+.kw-concept {
+  background: #f0fdf4;
+  border-color: #86efac;
+  color: #166534;
+}
+
+.stats-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.95rem;
+}
+.stats-table th, .stats-table td {
+  text-align: left;
+  padding: 6px 10px;
+  border-bottom: 1px solid var(--border);
+}
+.stats-table th { width: 40%; color: var(--muted); font-weight: 600; }
+
 .badge {
   font-size: 0.75rem;
   background: #fef3c7;
@@ -130,3 +148,98 @@ details { margin: 8px 0; }
   font-size: 0.85rem;
   background: #fff;
 }
+
+/* ---- Structured result page ---- */
+
+.result-header {
+  background: #fff;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 22px 20px;
+  margin: 4px 0 0;
+  text-align: center;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+}
+.result-header h1 {
+  margin: 0 0 6px;
+  font-size: 1.6rem;
+  letter-spacing: 0.02em;
+}
+
+.method-badge {
+  display: inline-block;
+  background: #eff6ff;
+  border: 1px solid #bfdbfe;
+  color: #1d4ed8;
+  border-radius: 20px;
+  padding: 4px 14px;
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+
+.card h2 {
+  margin: 0 0 12px;
+  font-size: 1.15rem;
+  padding-bottom: 8px;
+  border-bottom: 1px solid var(--border);
+}
+
+.stat-cards {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+  margin-bottom: 12px;
+}
+@media (max-width: 700px) { .stat-cards { grid-template-columns: 1fr 1fr; } }
+.stat-card {
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 14px 10px;
+  text-align: center;
+  background: #f9fafb;
+}
+.stat-card-accent { background: #eff6ff; border-color: #bfdbfe; }
+.stat-value { font-size: 1.4rem; font-weight: 700; }
+.stat-value.small { font-size: 1.05rem; }
+.stat-label { color: var(--muted); font-size: 0.82rem; margin-top: 2px; }
+
+.section-cards { display: grid; gap: 12px; }
+.section-card {
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  overflow: hidden;
+  background: #fff;
+}
+.section-card-title {
+  background: #f9fafb;
+  border-bottom: 1px solid var(--border);
+  padding: 10px 14px;
+  font-weight: 700;
+}
+.section-card-body { padding: 12px 14px; }
+
+.key-points { margin: 0; padding-left: 20px; }
+.key-points li { margin-bottom: 8px; }
+
+.concept-list { margin: 0; padding-left: 20px; columns: 2; }
+@media (max-width: 700px) { .concept-list { columns: 1; } }
+.concept-list li { margin-bottom: 6px; }
+
+.important-sentences { margin: 0; padding-left: 22px; }
+.important-sentences li { margin-bottom: 12px; line-height: 1.55; }
+.score-badge {
+  display: inline-block;
+  margin-left: 8px;
+  font-size: 0.75rem;
+  background: #f3f4f6;
+  border: 1px solid var(--border);
+  color: var(--muted);
+  border-radius: 4px;
+  padding: 1px 7px;
+  white-space: nowrap;
+}
+
+.how-it-works ol { margin: 0 0 8px; padding-left: 22px; }
+.how-it-works li { margin-bottom: 4px; }
+
+.summary-text { font-size: 1.02rem; line-height: 1.7; }

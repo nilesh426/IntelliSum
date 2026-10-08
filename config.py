@@ -22,7 +22,3 @@ class Config:
     MAX_CONTENT_LENGTH = int(os.environ.get("MAX_CONTENT_LENGTH", 16 * 1024 * 1024))
 
     ALLOWED_EXTENSIONS = {"pdf", "docx", "txt"}
-
-    # Phase 2 (abstractive) configuration — optional, read from .env
-    LLM_API_KEY = os.environ.get("LLM_API_KEY", "")
-    LLM_MODEL = os.environ.get("LLM_MODEL", "")
