@@ -3,22 +3,24 @@
 {% block content %}
 <section class="hero">
   <h1>IntelliSum</h1>
+  <p class="tagline-sub">Intelligent Document Summarization and Structuring System</p>
   <p class="lead">
-    Upload a document and get a meaningful, well-structured summary.
-    100% local NLP: text extraction, preprocessing, TF-IDF sentence scoring
-    and extractive summarization &mdash; no API key, no internet needed for
-    summarization.
+    Upload a PDF, DOCX, or TXT document and generate an extractive NLP
+    summary using traditional NLP techniques &mdash; text extraction,
+    preprocessing, TF-IDF sentence scoring and sentence selection.
+    No API key, no internet needed for summarization.
   </p>
   <p><span class="method-badge">Extractive NLP</span> <span class="hint">TF-IDF + cosine similarity &middot; works fully offline</span></p>
 </section>
 
 <section class="card">
   <h2>Upload a document</h2>
-  <form id="upload-form" action="{{ url_for('summarize') }}" method="post" enctype="multipart/form-data">
+  <form id="upload-form" action="{{ url_for('summarize') }}" method="post" enctype="multipart/form-data" data-max-bytes="{{ max_upload_bytes }}">
     <div class="form-group">
-      <label for="file">Document (PDF, DOCX, TXT &mdash; max 16 MB)</label>
+      <label for="file">Document (PDF, DOCX, TXT &mdash; max {{ max_upload_mb }} MB)</label>
       <input type="file" id="file" name="file" accept=".pdf,.docx,.txt" required />
-      <small class="hint">Supported formats: PDF, DOCX, TXT. Files are never executed.</small>
+      <small class="hint">Supported formats: PDF, DOCX, TXT &middot; Maximum file size: {{ max_upload_mb }} MB. Files are never executed.</small>
+      <div id="file-info" class="file-info" style="display:none;"></div>
     </div>
 
     <div class="form-group">
@@ -34,7 +36,7 @@
     <div id="form-error" class="flash error" style="display:none;"></div>
 
     <button type="submit" id="submit-btn" class="btn btn-primary">Generate Summary</button>
-    <div id="loading" class="loading" style="display:none;">Processing document&hellip;</div>
+    <div id="loading" class="loading" style="display:none;" aria-live="polite">Analyzing document&hellip;</div>
   </form>
 </section>
 
@@ -47,6 +49,7 @@
       <li>Sentence segmentation &amp; tokenization</li>
       <li>TF-IDF keyword extraction</li>
       <li>Heuristic section detection</li>
+      <li>PDF / DOCX summary export</li>
     </ul>
   </div>
   <div class="card">

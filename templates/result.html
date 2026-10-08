@@ -162,6 +162,16 @@
 </section>
 {% endif %}
 
+<!-- ============ DOWNLOADS ============ -->
+<section class="card download-card">
+  <h2>&#x2B07; Download Summary</h2>
+  <p class="hint">Download the structured summary above (not the original document). Both files contain the same information shown on this page.</p>
+  <div class="download-row">
+    <a class="btn btn-primary" href="{{ url_for('download', fmt='pdf') }}?doc_id={{ doc_id }}&amp;length={{ summary_length }}">Download PDF</a>
+    <a class="btn btn-primary" href="{{ url_for('download', fmt='docx') }}?doc_id={{ doc_id }}&amp;length={{ summary_length }}">Download DOCX</a>
+  </div>
+</section>
+
 <!-- ============ HOW IT WAS GENERATED ============ -->
 <section class="card how-it-works">
   <h2>How the Summary Was Generated</h2>

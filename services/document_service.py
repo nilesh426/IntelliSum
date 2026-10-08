@@ -1,6 +1,7 @@
 """Document upload validation + extraction + NLP orchestration (Phase 1)."""
 
 import os
+import re
 import uuid
 
 from werkzeug.utils import secure_filename
@@ -12,6 +13,15 @@ from extraction.txt_extractor import extract_txt
 from nlp.keyword_extraction import extract_keywords
 from nlp.preprocessing import preprocess_text
 from nlp.section_detection import detect_sections
+
+# Prefix added by save_upload() to stored files; stripped again so the
+# user always sees their original filename (never the internal uuid name).
+_STORED_PREFIX_RE = re.compile(r"^[0-9a-f]{8}_")
+
+
+def display_filename(stored_name):
+    """Return the original upload filename for a stored file name."""
+    return _STORED_PREFIX_RE.sub("", stored_name or "")
 
 
 def allowed_file(filename):
@@ -40,7 +50,7 @@ def save_upload(file_storage, upload_folder):
     # Reject empty uploads.
     if os.path.getsize(dest) == 0:
         os.remove(dest)
-        raise ValueError("The uploaded file is empty.")
+        raise ValueError("The uploaded document is empty.")
     return dest
 
 
@@ -69,14 +79,26 @@ def process_document(file_path, file_type=None):
             f"Unsupported file format '.{file_type}'. Please upload PDF, DOCX or TXT."
         )
 
-    result = extract_text(file_path, file_type)
+    try:
+        result = extract_text(file_path, file_type)
+    except ValueError as exc:
+        # Show the user's original filename, never the internal storage name.
+        stored = os.path.basename(file_path)
+        raise ValueError(
+            str(exc).replace(stored, display_filename(stored))
+        ) from exc
     text = result.get("text", "") or ""
 
     if not text.strip():
-        hint = ""
         if file_type == "pdf":
-            hint = " The PDF may be scanned (images only) with no extractable text."
-        raise ValueError(f"No extractable text found in '{filename}'.{hint}")
+            raise ValueError(
+                "No extractable text was found in this PDF. "
+                "This version of IntelliSum does not include OCR processing."
+            )
+        raise ValueError(
+            f"No extractable text found in '{display_filename(filename)}'. "
+            "Please upload a document containing readable text."
+        )
 
     nlp = preprocess_text(text)
     keywords = extract_keywords(text, sentences=nlp["sentences"], top_n=10)
@@ -89,7 +111,7 @@ def process_document(file_path, file_type=None):
         file_size = 0
 
     return {
-        "filename": filename,
+        "filename": display_filename(filename),
         "stored_path": file_path,
         "file_type": file_type,
         "page_count": result.get("page_count"),

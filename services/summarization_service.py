@@ -33,7 +33,6 @@ __all__ = [
     "build_download_payload",
 ]
 
-VALID_METHODS = ("extractive",)
 VALID_LENGTHS = ("short", "medium", "detailed")
 
 MAX_SECTION_SUMMARIES = 8

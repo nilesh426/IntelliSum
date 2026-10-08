@@ -243,3 +243,52 @@ details { margin: 8px 0; }
 .how-it-works li { margin-bottom: 4px; }
 
 .summary-text { font-size: 1.02rem; line-height: 1.7; }
+
+/* ---- Phase 3: landing, downloads, responsive polish ---- */
+
+.tagline-sub {
+  color: var(--muted);
+  font-size: 1rem;
+  margin: 0 0 8px;
+}
+
+.file-info {
+  margin-top: 8px;
+  font-size: 0.9rem;
+  background: #eff6ff;
+  border: 1px solid #bfdbfe;
+  color: #1d4ed8;
+  border-radius: 6px;
+  padding: 8px 12px;
+  word-break: break-all;
+}
+
+.download-card { border-left: 4px solid var(--primary); }
+.download-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 12px;
+}
+.download-row .btn { flex: 1 1 200px; text-align: center; }
+
+.btn + .btn { margin-left: 0; }
+
+@media (max-width: 700px) {
+  .container { padding: 0 12px; }
+  .card { padding: 16px; }
+  .hero h1 { font-size: 1.6rem; }
+  .result-header h1 { font-size: 1.3rem; }
+  .stat-cards { grid-template-columns: 1fr 1fr; }
+  .stat-value { font-size: 1.15rem; }
+  .meta-grid { grid-template-columns: 1fr; }
+  .download-row { flex-direction: column; }
+  .download-row .btn { width: 100%; }
+  .btn { padding: 12px 18px; }
+  .stats-table { display: block; overflow-x: auto; }
+  .text-preview { max-height: 240px; }
+}
+
+@media (max-width: 400px) {
+  .stat-cards { grid-template-columns: 1fr; }
+}
